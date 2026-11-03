@@ -9,7 +9,22 @@ export const SEUIL_PH_A_DISCUTER = 5.5;
 // Renvoie { min, max } des pH, ou null si la liste est vide.
 // Exemple : { min: 4.8, max: 7.6 }
 export function phMinMax(observations) {
-  throw new Error('TODO : coder phMinMax dans src/synthese.js');
+  if (observations.length === 0){
+    return null;
+  }
+  let min = observations[0].pH;
+  let max = observations[0].pH;
+
+  for (const observation of observations){
+    if (observation.pH < min){
+      min = observation.pH;
+    }
+
+    if (observation.pH > max){
+      max = observation.pH;
+    }
+  }
+  return { min,max };
 }
 
 // Renvoie un objet : pour chaque texture présente, le nombre d'observations.
