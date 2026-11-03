@@ -1,4 +1,4 @@
-# 5. Synthèse des observations
+  # 5. Synthèse des observations
 
 **Vos fichiers :** `src/synthese.js`, puis `app.js` (choix 5) · **Vos tests :** `npm run test:synthese` (5 tests fournis)
 
