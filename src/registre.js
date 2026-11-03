@@ -18,13 +18,14 @@ export function listerObservations(observations) {
   if (observations.length === 0){
     return `Aucune observation enregistrée`
   }else{
-    return observations.map(formaterObservation).join('\n')
+    return observations.map(formaterObservation).join('\n') //(map) effectuer des transformations sur le tableau
+     // (join) un separateur les elements d'un tableau ensuite les transforme en texte.
   }
 }
 
 // Renvoie l'observation qui a cet identifiant de point, ou undefined si elle n'existe pas.
 export function trouverParId(observations, id) {
-  throw new Error('TODO : coder trouverParId dans src/registre.js');
+  return observations.find(observations => observations.id === id); //(find) trouver un element dans le tableau
 }
 
 // Contrôle une saisie AVANT de l'ajouter. Tous les champs arrivent sous forme de TEXTE :
