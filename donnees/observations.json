@@ -1,0 +1,72 @@
+[
+  {
+    "id": "S01",
+    "parcelle": "P1",
+    "texture": "sableux",
+    "pH": 5.2,
+    "etatHumidite": "sec"
+  },
+  {
+    "id": "S02",
+    "parcelle": "P1",
+    "texture": "limoneux",
+    "pH": 6.1,
+    "etatHumidite": "intermédiaire"
+  },
+  {
+    "id": "S03",
+    "parcelle": "P2",
+    "texture": "argileux",
+    "pH": 6.8,
+    "etatHumidite": "humide"
+  },
+  {
+    "id": "S04",
+    "parcelle": "P2",
+    "texture": "sableux",
+    "pH": 4.8,
+    "etatHumidite": "sec"
+  },
+  {
+    "id": "S05",
+    "parcelle": "P3",
+    "texture": "limoneux",
+    "pH": 7.2,
+    "etatHumidite": "intermédiaire"
+  },
+  {
+    "id": "S06",
+    "parcelle": "P3",
+    "texture": "argileux",
+    "pH": 5.4,
+    "etatHumidite": "humide"
+  },
+  {
+    "id": "S07",
+    "parcelle": "P4",
+    "texture": "limoneux",
+    "pH": 6.3,
+    "etatHumidite": "sec"
+  },
+  {
+    "id": "S08",
+    "parcelle": "P4",
+    "texture": "sableux",
+    "pH": 7.6,
+    "etatHumidite": "intermédiaire"
+  },
+  {
+    "id": "S09",
+    "parcelle": "P5",
+    "texture": "argileux",
+    "pH": 5.1,
+    "etatHumidite": "humide"
+  },
+  {
+    "id": "S10",
+    "parcelle": "P5",
+    "texture": "limoneux",
+    "pH": 6.5,
+    "etatHumidite": "intermédiaire"
+  }
+]
