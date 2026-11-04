@@ -12,7 +12,15 @@ export const CHAMPS_MODIFIABLES = ['parcelle', 'texture', 'pH', 'etatHumidite'];
 // Supprime du carnet l'observation qui a cet identifiant.
 // Renvoie l'observation supprimée, ou undefined si elle n'existe pas (le carnet ne change pas).
 export function supprimerObservation(observations, id) {
-  throw new Error('TODO Bonus : coder supprimerObservation dans src/bonus.js');
+
+  const position = observations.findIndex(observation => observation.id === id); //(findIndex) permet de trouver en fonction de l'index.
+
+  if (position===-1){
+    return undefined
+  } else {
+    const conserveSuppression = observations.splice(position,1); //(splice) permet de retirer,remplacer et transformer un element à partir de l'index.
+    return conserveSuppression[0];
+  }
 }
 
 // Modifie UN champ d'une observation. La nouvelle valeur arrive sous forme de TEXTE et suit
@@ -21,7 +29,38 @@ export function supprimerObservation(observations, id) {
 // Erreurs : identifiant introuvable · champ 'id' (non modifiable) · champ absent de CHAMPS_MODIFIABLES
 //           · valeur refusée par les règles de l'ajout.
 export function modifierObservation(observations, id, champ, valeur) {
-  throw new Error('TODO Bonus : coder modifierObservation dans src/bonus.js');
+
+  const erreurs=[];
+  const observation= trouverParId(observations,id);
+
+  if (!observation){
+    erreurs.push("Identifiant introuvable");
+    return erreurs;
+  }
+  if (champ === 'id'){
+    erreurs.push("champ 'id' n'est pas modifiable");
+    return erreurs;
+   }
+  if(!CHAMPS_MODIFIABLES.includes(champ)){
+    erreurs.push("champ absent des CHAMPS_MODIFIABLES autorisés.");
+    return erreurs;
+  } 
+
+  let valeur_ph_saisie = valeur;
+  if(champ === 'pH'){
+    valeur_ph_saisie= versNombre(valeur);
+  if (isNaN(valeur_ph_saisie) || valeur_ph_saisie <0 || valeur_ph_saisie > 14){
+    erreurs.push(" la valeur de pH doit etre compris entre 0 et 14");
+  } 
+ }
+
+ if(erreurs.length > 0){
+  return erreurs;
+ }
+  
+    observation[champ] = valeur_ph_saisie;
+ return [];
+
 }
 
 // Renvoie une COPIE triée par pH décroissant. Le tableau reçu ne doit pas changer d'ordre.
