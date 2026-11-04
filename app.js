@@ -47,6 +47,29 @@ async function ajouter(observations){
   if (pH === null) return;
   const etatHumidite = await demander (`Etat d'humidité (${HUMIDITES.join(', ')}) : humide`);
   if (etatHumidite === null) return;
+
+  //Avant de verifier : point et parcelle en majuscules, texture et état d'humidité en miniscules; le pH reste tel quel.
+
+  const saisie = {
+    id: id.toUppercase(),
+    parcelle: parcelle.toUppercase(),
+    texture: texture.toLowercase(),
+    etatHumidite: etatHumidite.toLowercase(),
+    pH,
+  };
+
+  const erreurs = ajouterObservation(observations, saisie);
+  if (erreurs.length > 0){
+    console.log('Observation refusée :');
+    for (const erreur of erreurs){
+      console.log(`  -${erreur}`);
+    }
+    console.log(`Le carnet compte toujours ${observations.length} observation(s).`);
+    return;
+  }
+
+  await enregistrerJson(FICHIER_DONNEES, observations);
+  console.log(`Observation ${saisie.id} ajoutée. Le carnet compte ${observations.length} observations.`)
 }
 
 async function main() {
