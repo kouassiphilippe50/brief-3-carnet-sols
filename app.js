@@ -72,6 +72,61 @@ async function ajouter(observations){
   console.log(`Observation ${saisie.id} ajoutée. Le carnet compte ${observations.length} observations.`)
 }
 
+// Choix 2 : Liste des observations
+function lister(observations){
+  console.log(`---- Liste des observations (${observations.length}) ---`);
+  console.log(listerObservations(observations));
+}
+
+// Choix 3 : Recherche par point, parcelle , Texture.
+
+async function rechercher(observations){
+  console.log('------------- Rechercher ------------------');
+  console.log('1. Par point (identifiant)');
+  console.log('Par parcelle');
+  console.log('Les observations d une texture');
+
+  const sousChoix = await demander('Votre choix : ');
+  if(sousChoix === null) returns;
+
+  switch (sousChoix){
+    case "1" : {
+      const saisie = await demander("Point : ");
+      if (saisie === null) return;
+      const id = saisie.toUppercase();
+      const observation = trouverParId(observations, id);
+      console.log(observation === undefined ? `Observation ${id} introuvable.` : formaterObservation(observation));
+      break;
+    }
+
+    case "2" : {
+      const saisie = await demander("Parcelle : ");
+      if (saisie === null) return;
+      const parcelle = saisie.toUppercase();
+      const trouvees = filtrerParParcelle(observations, parcelle);
+      console.log(`${trouvees.length} observation (s) sur la parcelle ${parcelle} :`);
+      console.log(listerObservations(trouvees));
+      break;
+    }
+
+    case "3" : {
+      const saisie = await demander("Texture : ");
+      if (saisie === null) return;
+      const texture = saisie.toLowercase();
+      const trouvees = filtrerParTexture(observations, texture);
+      console.log(`${trouvees.length} observation (s) de texture ${texture} :`);
+      console.log(listerObservations(trouvees));
+      break;
+    }
+    default:
+      console.log("Choix inconnu : retour au menu.")
+  }
+
+}
+
+
+
+
 async function main() {
   ouvrirSaisie();
   console.log("À compléter : écrivez le menu dans app.js (fiches/3-ajouter-lister.md).");
