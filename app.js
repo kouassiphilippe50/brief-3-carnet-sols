@@ -165,12 +165,65 @@ function synthese(observations) {
   console.log("Ces points ne sont pas un diagnostic de fertilisation : ils servent à préparer l'échange avec le coach.");
 }
 
-
+// PROGRAMME PRINCIPAL
 
 async function main() {
   ouvrirSaisie();
-  console.log("À compléter : écrivez le menu dans app.js (fiches/3-ajouter-lister.md).");
-  fermerSaisie();
+  afficherAcceuil();
+
+  // Chargement des données : si ça échoue, on continue avec un carnet vide.
+  let observations = [];
+
+  try {
+    observations = await chargerJson(FICHIER_DONNEES);
+    console.log(`${observations.length} observation(s) chargée(s) depuis ${FICHIER_DONNEES}`);
+  } catch (erreur) {
+    console.log(`Impossible de lire ${FICHIER_DONNEES} : ${erreur.message}. le carnet démarre vide`);
+    observations = [];
+  }
+
+  let continuer = true;
+  while (continuer) {
+    afficherMenu();
+    const choix = await demander("votre choix : ");
+
+    if (choix === null){
+      break;
+    }
+
+    try {
+      switch (choix) {
+        case "1" :
+          await ajouter(observations);
+          break;
+        case "2" :
+          lister(observations);
+          break;
+        case "3" :
+          await rechercher(observations);
+          break;
+        case "4" :
+          await trier(observations);
+          break;
+        case "5" :
+          synthese(observations);
+          break;
+        case "0" :
+          console.log("Au revoir !");
+          continuer = false;
+          break;
+        default:
+          console.log(` Choix inconnu : ${choix} . Tapez un chiffre du menu.`)
+      }
+    } catch (erreur){
+      if (stringify(erreur.message).startsWith ("TODO")){
+        console.log(`A complèter : ${erreur.message}`);
+      } else{
+        console.log(`Erreur inattendue : ${erreur.message}`);
+      }
+    }
+  }
+    fermerSaisie();
 }
 
 main();
