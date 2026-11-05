@@ -26,6 +26,8 @@ function afficherMenu(){
   console.log('3. Rechercher (point, parcelle, texture)');
   console.log('4. Trier par pH');
   console.log('5. Synthèse des observtions');
+  console.log('6. Supprimer des observations');
+  console.log('7. Modifier des observations');
   console.log('0. Quitter');
 }
 
@@ -33,7 +35,7 @@ function afficherMenu(){
 
 //Choix 1 : poser les cinq questions, vérifier, ajouter, enregistrer.
 
-async function ajouter(observations){
+async function ajouter(){
   console.log('----- Ajouter une observation -----');
 
   const id = await demander('point observé (ex. S11) : ');
@@ -59,7 +61,7 @@ async function ajouter(observations){
     parcelle: parcelle.toUpperCase(),
     texture: texture.toLowerCase(),
     etatHumidite: etatHumidite.toLowerCase(),
-    pH,
+    pH: pH,
   };
 
   const erreurs = ajouterObservation(observations, saisie);
@@ -76,14 +78,14 @@ async function ajouter(observations){
 }
 
 // Choix 2 : Liste des observations
-function lister(observations){
+function lister(){
   console.log(`---- Liste des observations (${observations.length}) ---`);
   console.log(listerObservations(observations));
 }
 
 // Choix 3 : Recherche par point, parcelle , Texture.
 
-async function rechercher(observations){
+async function rechercher(){
   console.log('------------- Rechercher ------------------');
   console.log('1. Par point (identifiant)');
   console.log('2. Par parcelle');
@@ -92,57 +94,53 @@ async function rechercher(observations){
   const sousChoix = await demander('Votre choix : ');
   if(sousChoix === null) return;
 
-  switch (sousChoix){
-    case 1 : {
-      const saisie = await demander("Point : ");
-      if (saisie === null) return;
-      const id = saisie.toUpperCase();
-      const observation = trouverParId(observations, id);
-      console.log(observation === undefined ? `Observation ${id} introuvable.` : formaterObservation(observation));
-      break;
+  if (sousChoix === '1'){
+    const reponse = await demander('point : ');
+    if (reponse === null) return;
+    const id = reponse.toUpperCase();
+    const observation = trouverParId(observations, id);
+    if (observation === undefined) {
+      console.log(`observation ${id} introuvable.`);
+    } else {
+      console.log(formaterObservation(observation));
     }
-
-    case 2 : {
-      const saisie = await demander("Parcelle : ");
-      if (saisie === null) return;
-      const parcelle = saisie.toUpperCase();
-      const trouvees = filtrerParParcelle(observations, parcelle);
-      console.log(`${trouvees.length} observation (s) sur la parcelle ${parcelle} :`);
-      console.log(listerObservations(trouvees));
-      break;
-    }
-
-    case 3 : {
-      const saisie = await demander("Texture : ");
-      if (saisie === null) return;
-      const texture = saisie.toLowercase();
-      const trouvees = filtrerParTexture(observations, texture);
-      console.log(`${trouvees.length} observation (s) de texture ${texture} :`);
-      console.log(listerObservations(trouvees));
-      break;
-    }
-    default:
-      console.log("Choix inconnu : retour au menu.")
+  } else if (sousChoix === '2'){
+    const reponse = await demander('parcelle : ');
+    if (reponse === null) return;
+    const parcelle = reponse.toUpperCase();
+    const resultats = filtrerParParcelle(observations, parcelle);
+    console.log(resultats.length + ' observation(s) sur la parcelle ' + parcelle + ' :');
+    console.log(listerObservations(resultats));
+  } else if (sousChoix === '3'){
+    const reponse = await demander('Texture : ');
+    if(reponse === null) return;
+    const texture = reponse.toUpperCase();
+    const resultats = filtrerParTexture(observations, texture);
+    console.log(resultats.length + 'observation de texture ' + texture + ' :');
+    console.log(listerObservations(resultats));
+  } else {
+    console.log('Choix inconnu : retour au menu.');
   }
 }
 
 // choix 4 : trier par pH ()
 
-async function trier(observations){
+async function trier(){
   console.log("-------------- Trier---------------");
   console.log("1. Par pH croissant ");
   const sousChoix =await demander("Votre choix : ");
   if (sousChoix === null) return;
 
   if (sousChoix === '1'){
-    console.log(listerObservations(trierParPh(observations)));
+    const observationsTriees = trierParPh(observations);
+    console.log(listerObservations(trierParPh(observationsTriees)));
   } else {
     console.log("choix inconnu : retour Menu");
   }
 }
 
 // choix 5 : SYNTHESE
-function synthese(observations) {
+function synthese() {
   console.log("-------- Synthèse des observations-------------");
   console.log("Nombre d'observations : ", observations.length);
 
@@ -154,13 +152,14 @@ function synthese(observations) {
   }
 
   console.log("Observation par texture : ");
-  for (const[texture, nombre] of Object.entries(compterParTexture(observations))){
+  const comptes = compterParTexture(observations);
+  for (const[texture, nombre] of Object.entries(comptes)){
     console.log(` ${texture} : ${nombre}`);
   }
 
-  const adiscuter = pointsADiscuter(observations, SEUIL_PH_A_DISCUTER);
+  const aDiscuter = pointsADiscuter(observations, SEUIL_PH_A_DISCUTER);
   console.log(` points à discuter avec le coach (pH < ${SEUIL_PH_A_DISCUTER}) : ${adiscuter.length}`);
-  for (const observation of adiscuter){
+  for (const observation of aDiscuter){
     console.log(` ${formaterObservation(observation)}`);
   }
 
@@ -168,6 +167,50 @@ function synthese(observations) {
   console.log("Ces points ne sont pas un diagnostic de fertilisation : ils servent à préparer l'échange avec le coach.");
 }
 
+//choix : 6 supprimer observation (bonus)
+
+async function supprimer(observations){
+  const saisie = await demander(' Identifiant: ');
+  if(saisie === null) return;
+  const id = saisie.toUpperCase();
+
+  const suprrime = supprimerObservation(onservations, id);
+  if (supprime === undefined){
+    console.log(` ${id} introuvable. `);
+    return;
+  }
+  await enregistrerJson(FICHIER_DONNEES, observations);
+  console.log(` observation ${id} supprimée. Le carnet compte ${observations.length} observation(s). `)
+}
+
+// choix : 7 modifier le champ d'une observation (bonus)
+
+async function modifier() {
+  const saisieId = await demander(' Identifiant (Nouvelle valeur: ');
+  if (saisieId === null) return;
+  const id = saisieId.toUpperCase();
+
+  const champ = await demander(`champ à modifier (${CHAMPS_MODIFIABLES.join(',')}) : `);
+  if (champ === null) return;
+  const valeurSaisie = await demander('Nouvelle valeur: ');
+  if(valeurSaisie === null) return;
+
+  let valeur = valeurSaisie;
+    if (champ === 'parcelle') valeur = valeurSaisie.toLowerCase();
+    if (champ === 'texture' || champ === 'etatHumidite') valeur = valeurSaisie.toLowerCase();
+  
+  const erreurs = modifierObservation(observations, id, champ, valeur);
+    if (erreurs.length > 0) {
+      console.log('Modification refusée :')
+      for (const erreur of erreurs) {
+        console.log(' -' + erreurs);
+        await enregistrerJson(FICHIER_DONNEES, observations);
+        return;
+      }
+  
+      console.log(`Observation ${id} modifiée`);
+    }
+}
 // PROGRAMME PRINCIPAL
 
 async function main() {
@@ -175,14 +218,13 @@ async function main() {
   afficherAcceuil();
 
   // Chargement des données : si ça échoue, on continue avec un carnet vide.
-  let observations = [];
-
+  
   try {
     observations = await chargerJson(FICHIER_DONNEES);
     console.log(`${observations.length} observation(s) chargée(s) depuis ${FICHIER_DONNEES}`);
   } catch (erreur) {
+    observations =[]
     console.log(`Impossible de lire ${FICHIER_DONNEES} : ${erreur.message}. le carnet démarre vide`);
-    observations = [];
   }
 
   let continuer = true;
@@ -192,26 +234,32 @@ async function main() {
 
     if (choix === null || choix === '0'){
       console.log('AU REVOIR !')
-     break ;
+      continuer = false;
+      continue;
     }
 
     try {
       switch (choix) {
         case '1' :
-          await ajouter(observations);
+          await ajouter();
           break;
         case '2' :
-          lister(observations);
+          lister();
           break;
         case '3' :
-          await rechercher(observations);
+          await rechercher();
           break;
         case '4' :
-          await trier(observations);
+          await trier();
           break;
         case '5' :
-          synthese(observations);
+          synthese();
           break;
+          case '6' :
+            await supprimer();
+            break;
+          case '7' :
+            await modifier(); 
         case '0' :
           console.log('Au revoir !');
           continuer = false;
