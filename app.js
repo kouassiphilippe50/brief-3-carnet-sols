@@ -23,11 +23,10 @@ function afficherMenu(){
   console.log('------------------MENU----------------');
   console.log('1. Ajouter une observation');
   console.log('2. Lister les observations');
-  console.log('3. Rechercher (point, parcelle, texture');
+  console.log('3. Rechercher (point, parcelle, texture)');
   console.log('4. Trier par pH');
   console.log('5. Synthèse des observtions');
   console.log('0. Quitter');
-  console.log(' Votre choix :');
 }
 
 //---------------- Actions ------------------------------
@@ -37,24 +36,29 @@ function afficherMenu(){
 async function ajouter(observations){
   console.log('----- Ajouter une observation -----');
 
-  const id = await demander('point observé (ex. S11) : s11');
+  const id = await demander('point observé (ex. S11) : ');
   if (id === null) return;
-  const parcelle = await demander('parcelle (ex. P1) : p6');
+
+  const parcelle = await demander('parcelle (ex. P1) : ');
   if (parcelle === null) return;
-  const texture = await demander(`Texture (${TEXTURES.join(', ')}) : Limoneux `);
-  if (parcelle === null) return;
-  const pH = await demander('pH (nombre de 0 à 14, sans unité, virgule acceptée) : 5,8');
+
+  const texture = await demander(`Texture (${TEXTURES.join(', ')}) : `);
+  if (texture === null) return;
+
+  const pH = await demander('pH (nombre de 0 à 14, sans unité, virgule acceptée) : ');
   if (pH === null) return;
-  const etatHumidite = await demander (`Etat d'humidité (${HUMIDITES.join(', ')}) : humide`);
+
+  const etatHumidite = await demander (`Etat d'humidité (${HUMIDITES.join(', ')}) : `);
   if (etatHumidite === null) return;
 
   //Avant de verifier : point et parcelle en majuscules, texture et état d'humidité en miniscules; le pH reste tel quel.
+  
 
   const saisie = {
-    id: id.toUppercase(),
-    parcelle: parcelle.toUppercase(),
-    texture: texture.toLowercase(),
-    etatHumidite: etatHumidite.toLowercase(),
+    id: id.toUpperCase(),
+    parcelle: parcelle.toUpperCase(),
+    texture: texture.toLowerCase(),
+    etatHumidite: etatHumidite.toLowerCase(),
     pH,
   };
 
@@ -62,14 +66,13 @@ async function ajouter(observations){
   if (erreurs.length > 0){
     console.log('Observation refusée :');
     for (const erreur of erreurs){
-      console.log(`  -${erreur}`);
+      console.log(' - ' + erreur);
     }
     console.log(`Le carnet compte toujours ${observations.length} observation(s).`);
-    return;
-  }
-
+  }else{
   await enregistrerJson(FICHIER_DONNEES, observations);
   console.log(`Observation ${saisie.id} ajoutée. Le carnet compte ${observations.length} observations.`)
+  }
 }
 
 // Choix 2 : Liste des observations
@@ -83,33 +86,33 @@ function lister(observations){
 async function rechercher(observations){
   console.log('------------- Rechercher ------------------');
   console.log('1. Par point (identifiant)');
-  console.log('Par parcelle');
-  console.log('Les observations d une texture');
+  console.log('2. Par parcelle');
+  console.log("3. Les observations d'une texture");
 
   const sousChoix = await demander('Votre choix : ');
-  if(sousChoix === null) returns;
+  if(sousChoix === null) return;
 
   switch (sousChoix){
-    case "1" : {
+    case 1 : {
       const saisie = await demander("Point : ");
       if (saisie === null) return;
-      const id = saisie.toUppercase();
+      const id = saisie.toUpperCase();
       const observation = trouverParId(observations, id);
       console.log(observation === undefined ? `Observation ${id} introuvable.` : formaterObservation(observation));
       break;
     }
 
-    case "2" : {
+    case 2 : {
       const saisie = await demander("Parcelle : ");
       if (saisie === null) return;
-      const parcelle = saisie.toUppercase();
+      const parcelle = saisie.toUpperCase();
       const trouvees = filtrerParParcelle(observations, parcelle);
       console.log(`${trouvees.length} observation (s) sur la parcelle ${parcelle} :`);
       console.log(listerObservations(trouvees));
       break;
     }
 
-    case "3" : {
+    case 3 : {
       const saisie = await demander("Texture : ");
       if (saisie === null) return;
       const texture = saisie.toLowercase();
@@ -123,7 +126,7 @@ async function rechercher(observations){
   }
 }
 
-// trier par pH ()
+// choix 4 : trier par pH ()
 
 async function trier(observations){
   console.log("-------------- Trier---------------");
@@ -131,21 +134,21 @@ async function trier(observations){
   const sousChoix =await demander("Votre choix : ");
   if (sousChoix === null) return;
 
-  if (sousChoix === 1){
+  if (sousChoix === '1'){
     console.log(listerObservations(trierParPh(observations)));
   } else {
     console.log("choix inconnu : retour Menu");
   }
 }
 
-// SYNTHESE
+// choix 5 : SYNTHESE
 function synthese(observations) {
   console.log("-------- Synthèse des observations-------------");
   console.log("Nombre d'observations : ", observations.length);
 
   const bornes = phMinMax(observations);
   if (bornes === null){
-    console.log("pH minimum et maximum : aucune données");
+    console.log('pH minimum et maximum : aucune données');
   } else {
     console.log(` pH minimum : ${bornes.min} . pH maximum : ${bornes.max}`);
   }
@@ -155,9 +158,9 @@ function synthese(observations) {
     console.log(` ${texture} : ${nombre}`);
   }
 
-  const Adiscuter = pointsADiscuter(observations, SEUIL_PH_A_DISCUTER);
-  console.log(` points à discuter avec le coach (pH < ${SEUIL_PH_A_DISCUTER}) : ${Adiscuter.length}`);
-  for (const observation of observations){
+  const adiscuter = pointsADiscuter(observations, SEUIL_PH_A_DISCUTER);
+  console.log(` points à discuter avec le coach (pH < ${SEUIL_PH_A_DISCUTER}) : ${adiscuter.length}`);
+  for (const observation of adiscuter){
     console.log(` ${formaterObservation(observation)}`);
   }
 
@@ -185,38 +188,39 @@ async function main() {
   let continuer = true;
   while (continuer) {
     afficherMenu();
-    const choix = await demander("votre choix : ");
+    const choix = await demander('votre choix : ');
 
-    if (choix === null){
-      break;
+    if (choix === null || choix === '0'){
+      console.log('AU REVOIR !')
+     break ;
     }
 
     try {
       switch (choix) {
-        case "1" :
+        case '1' :
           await ajouter(observations);
           break;
-        case "2" :
+        case '2' :
           lister(observations);
           break;
-        case "3" :
+        case '3' :
           await rechercher(observations);
           break;
-        case "4" :
+        case '4' :
           await trier(observations);
           break;
-        case "5" :
+        case '5' :
           synthese(observations);
           break;
-        case "0" :
-          console.log("Au revoir !");
+        case '0' :
+          console.log('Au revoir !');
           continuer = false;
           break;
         default:
-          console.log(` Choix inconnu : ${choix} . Tapez un chiffre du menu.`)
+          console.log(` Choix inconnu : ${choix}. Tapez un chiffre du menu.`)
       }
     } catch (erreur){
-      if (stringify(erreur.message).startsWith ("TODO")){
+      if (erreur.message.startsWith ("TODO")){
         console.log(`A complèter : ${erreur.message}`);
       } else{
         console.log(`Erreur inattendue : ${erreur.message}`);
