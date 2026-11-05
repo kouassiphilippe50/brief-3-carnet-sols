@@ -13,4 +13,4 @@ export async function chargerJson(chemin) {
 export async function enregistrerJson(chemin, enregistrements) {
   const tabl = JSON.stringify(enregistrements,null,2); // Transformer tableau en texte.
   return await writeFile(chemin,tabl,"utf-8") // ecrire le tableau dans le fichier.
-}
+}  
