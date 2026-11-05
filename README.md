@@ -4,7 +4,8 @@
 
 ## Contexte
 
-✏️ *En cinq à huit phrases : qui utilise l'outil (son métier, son geste professionnel), son besoin, ce qu'il saisit, ce que le programme lui affiche, ce que l'outil ne fait pas.*
+Le carnet d'observation des sol est destiné à l'équipe de technicien agronome de la ferme pédagogique , qui rélève des point de sol sur le terrain. Son geste professionnel consiste à observer un point  avec la fiche de terrain, puis à noter sa texture, son pH et son état d'humidité. Son besoin de conserver ces relevés, de retrouver rapidement les points concernés et de repérer les valeurs à vérifier avec l'agronome.L'utilisateur saisit un identifiant de point, une classe de texture une valeur croissant si besoin, et un état d'humidité. Le programme affiche la liste des observations, triées par pH croissant si besoin, et peut se limiter à une selection de point. Il signale aussi les saisies refusées et permet de corriger un champ d'une observation existante. En revanche, l'outil ne produit aucun diagnostic de fertilisation et ne remplace pas l'avis de l'agronome. Il aide seulement à organiser les relevés et à préparer la discution.
+
 
 ## Prérequis et lancement
 
@@ -23,22 +24,36 @@ Sous PowerShell, si `npm` est bloqué : `npm.cmd test`.
 
 ✏️ *Cochez seulement ce qui marche : `- [x]`.*
 
-- [ ] Données lues et enregistrées dans `donnees/observations.json`
-- [ ] Ajouter une observation, saisies invalides refusées sans arrêter le programme
-- [ ] Lister les observations, message si le carnet est vide
-- [ ] Rechercher par point ou par parcelle ; filtrer par texture
-- [ ] Trier par pH
-- [ ] Synthèse : pH minimum et maximum, nombre par texture, points à discuter (pH < 5,5)
-- [ ] Bonus : supprimer et modifier une observation (choix 6 et 7)
+- [x] Données lues et enregistrées dans `donnees/observations.json`
+- [x] Ajouter une observation, saisies invalides refusées sans arrêter le programme
+- [x] Lister les observations, message si le carnet est vide
+- [x] Rechercher par point ou par parcelle ; filtrer par texture
+- [x] Trier par pH
+- [x] Synthèse : pH minimum et maximum, nombre par texture, points à discuter (pH < 5,5)
+- [x] Bonus : supprimer et modifier une observation (choix 6 et 7)
 - [ ] Bonus : tri par pH décroissant, texture la plus fréquente
 
 ## Données
 
-✏️ *Le fichier, le nombre d'observations, les champs (voir [docs/dictionnaire-donnees.md](docs/dictionnaire-donnees.md)), le pH sans unité. Rappelez qu'elles sont fictives.*
+| Champ | Contenu | Exemple |
+|---|---|---|
+| `id` | Identifiant du point observé | `S11` |
+| `parcelle` | Parcelle où se trouve le point | `P1` |
+| `texture` | Classe de texture : TEXTURES | limoneux |
+| `pH` | Nombre de 0 à 14, sans unité (virgule acceptée à la saisie) | `6,5` |
+| `etatHumidite` | État d'humidité : HUMIDITES | sec |
+
 
 ## Limites
 
-✏️ *Au moins trois. Par exemple : le carnet repère des valeurs à discuter, mais ne produit aucun diagnostic de fertilisation.*
+Pas de diagnostic : le carnet repère des valeurs à discuter, mais ne produit aucun diagnostic de fertilisation et ne remplace pas l'avis de l'agronome.
+-Pas de moyenne de pH: le pH suit une échelle logarithmique, donc la synthèse donne seulement le minimum et le maximum.
+-Seuil fixe*: les « points à discuter » sont ceux dont le pH est strictement inférieur à 5,5. Ce seuil est le même pour tous les sols et toutes les cultures, alors qu'il peut varier selon le contexte.
+-Données fictives et peu nombreuses : les observations ne permettent aucune conclusion sur un vrai terrain.
+-Stockage simple : un seul fichier JSON, pour un seul utilisateur à la fois, sans sauvegarde automatique ni historique des modifications.
+-Saisie non vérifiée sur le terrain** : le programme contrôle le format (pH entre 0 et 14, texture et humidité dans les listes autorisées), mais ne peut pas savoir si la mesure est juste.
+
+
 
 ## Documents
 
@@ -46,4 +61,6 @@ Sous PowerShell, si `npm` est bloqué : `npm.cmd test`.
 
 ## Auteur
 
-✏️ *Prénom NOM, compte GitHub. Entraide : avec qui, sur quoi.*
+Kouassi kouakou philippe alexandre , kouassiphilippe50 
+aide : N'DIAMON jules christ et TOURE emmanuel 
+sur : app.js , bonus et releves test.
